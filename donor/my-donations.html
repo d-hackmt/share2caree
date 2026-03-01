@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Donations | ShareToCare</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body style="background-color: var(--bg-main);">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="logo"
+                style="margin-bottom: 2.5rem; padding: 0 1rem;">ShareTo<span>Care</span></a>
+            <nav style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1;">
+                <a href="dashboard.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="layout-dashboard"></i> Dashboard
+                </a>
+                <a href="add-donation.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="plus-circle"></i> Add Donation
+                </a>
+                <a href="my-donations.html" class="btn"
+                    style="background: var(--primary-blue-light); color: var(--primary-blue); justify-content: flex-start;">
+                    <i data-lucide="package"></i> My Donations
+                </a>
+                <a href="history.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="history"></i> History
+                </a>
+                <a href="profile.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="user"></i> Profile
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <a href="../login.html" class="btn" style="justify-content: flex-start; color: #ef4444; width: 100%;">
+                    <i data-lucide="log-out"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                <div>
+                    <h1 style="font-size: 1.875rem;">My Active Donations</h1>
+                    <p style="color: var(--text-muted);">Manage your currently listed items.</p>
+                </div>
+                <a href="add-donation.html" class="btn btn-primary">
+                    <i data-lucide="plus"></i> New Donation
+                </a>
+            </header>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                <!-- Donation Card 1 -->
+                <div class="card" style="padding: 0; overflow: hidden; position: relative;">
+                    <span class="badge badge-available"
+                        style="position: absolute; top: 1rem; right: 1rem;">Available</span>
+                    <div
+                        style="height: 180px; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="image" style="width: 48px; height: 48px; color: var(--text-muted);"></i>
+                    </div>
+                    <div style="padding: 1.25rem;">
+                        <h3 style="margin-bottom: 0.5rem; font-size: 1.125rem;">Winter Jackets (Set of 5)</h3>
+                        <div
+                            style="display: flex; gap: 1rem; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            <span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="tag"
+                                    size="14"></i> Clothes</span>
+                            <span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin"
+                                    size="14"></i> Mumbai</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-outline"
+                                style="flex: 1; padding: 0.5rem; font-size: 0.875rem;">Edit</button>
+                            <button class="btn btn-primary" style="flex: 1; padding: 0.5rem; font-size: 0.875rem;">View
+                                Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donation Card 2 (Claimed) -->
+                <div class="card" style="padding: 0; overflow: hidden; position: relative;">
+                    <span class="badge badge-claimed" style="position: absolute; top: 1rem; right: 1rem;">Claimed</span>
+                    <div
+                        style="height: 180px; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="image" style="width: 48px; height: 48px; color: var(--text-muted);"></i>
+                    </div>
+                    <div style="padding: 1.25rem;">
+                        <h3 style="margin-bottom: 0.5rem; font-size: 1.125rem;">Science Encyclopedia</h3>
+                        <div
+                            style="display: flex; gap: 1rem; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            <span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="tag"
+                                    size="14"></i> Books</span>
+                            <span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin"
+                                    size="14"></i> Mumbai</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary"
+                                style="flex: 1; padding: 0.5rem; font-size: 0.875rem; background: var(--primary-blue);">Contact
+                                NGO</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

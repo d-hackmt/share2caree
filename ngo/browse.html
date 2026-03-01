@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Donations | ShareToCare</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body style="background-color: var(--bg-main);">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="../index.html" class="logo"
+                style="margin-bottom: 2.5rem; padding: 0 1rem;">ShareTo<span>Care</span></a>
+            <nav style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1;">
+                <a href="dashboard.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="layout-dashboard"></i> Dashboard
+                </a>
+                <a href="browse.html" class="btn"
+                    style="background: var(--primary-green-light); color: var(--primary-green); justify-content: flex-start;">
+                    <i data-lucide="search" style="color: var(--primary-green);"></i> Browse Donations
+                </a>
+                <a href="claimed.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="check-square"></i> My Claimed Items
+                </a>
+                <a href="history.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="history"></i> History
+                </a>
+                <a href="profile.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="user"></i> Profile
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header style="margin-bottom: 2.5rem;">
+                <h1 style="font-size: 1.875rem;">Browse Available Donations</h1>
+                <p style="color: var(--text-muted);">Find items that your organization can use.</p>
+            </header>
+
+            <!-- Filters -->
+            <div class="card" style="margin-bottom: 2rem; padding: 1.25rem;">
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <div style="position: relative;">
+                            <i data-lucide="search"
+                                style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"
+                                size="18"></i>
+                            <input type="text" class="form-control" style="padding-left: 2.5rem;"
+                                placeholder="Search by title or location...">
+                        </div>
+                    </div>
+                    <select class="form-control" style="width: auto;">
+                        <option>All Categories</option>
+                        <option>Food</option>
+                        <option>Clothes</option>
+                        <option>Books</option>
+                    </select>
+                    <select class="form-control" style="width: auto;">
+                        <option>Near Me</option>
+                        <option>Within 10km</option>
+                        <option>All Locations</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid Layout -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+                <!-- Donation Card 1 -->
+                <div class="card" style="padding: 0; overflow: hidden; position: relative;">
+                    <span class="badge badge-available"
+                        style="position: absolute; top: 1rem; right: 1rem;">Available</span>
+                    <div
+                        style="height: 200px; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="package" style="width: 48px; height: 48px; color: var(--text-muted);"></i>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                            <h3 style="font-size: 1.125rem;">Fresh Vegetable Crate</h3>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">2 hours
+                                ago</span>
+                        </div>
+                        <p
+                            style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="map-pin" size="14"></i> Mumbai Central, MS
+                        </p>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div style="display: flex; flex-direction: column;">
+                                <span
+                                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Quantity</span>
+                                <span style="font-weight: 700;">15 KG</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; text-align: right;">
+                                <span
+                                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Condition</span>
+                                <span style="font-weight: 700; color: var(--primary-green);">Fresh</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary"
+                            style="width: 100%; justify-content: center; background-color: var(--primary-green);">Claim
+                            Donation</button>
+                    </div>
+                </div>
+
+                <!-- Donation Card 2 -->
+                <div class="card" style="padding: 0; overflow: hidden; position: relative;">
+                    <span class="badge badge-available"
+                        style="position: absolute; top: 1rem; right: 1rem;">Available</span>
+                    <div
+                        style="height: 200px; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="book-open" style="width: 48px; height: 48px; color: var(--text-muted);"></i>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                            <h3 style="font-size: 1.125rem;">Grade 10 Textbooks</h3>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">5 hours
+                                ago</span>
+                        </div>
+                        <p
+                            style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="map-pin" size="14"></i> Bandra West, Mumbai
+                        </p>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <div style="display: flex; flex-direction: column;">
+                                <span
+                                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Quantity</span>
+                                <span style="font-weight: 700;">12 Books</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; text-align: right;">
+                                <span
+                                    style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Condition</span>
+                                <span style="font-weight: 700; color: var(--primary-blue);">Used - Good</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary"
+                            style="width: 100%; justify-content: center; background-color: var(--primary-green);">Claim
+                            Donation</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
