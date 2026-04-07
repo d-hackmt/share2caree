@@ -63,6 +63,40 @@
 
     <script>
         lucide.createIcons();
+
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            const password = e.target.querySelector('input[type="password"]').value;
+            const role = e.target.querySelector('select').value.toUpperCase();
+
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    if (user.role !== role) {
+                        alert(`Please login with a ${user.role.toLowerCase()} account.`);
+                        return;
+                    }
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    if (user.role === 'DONOR') window.location.href = 'donor/dashboard.html';
+                    else if (user.role === 'NGO') window.location.href = 'ngo/dashboard.html';
+                    else window.location.href = 'admin/dashboard.html';
+                } else {
+                    alert('Login failed: Invalid email or password');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Backend not running? Please check console.');
+            }
+        });
     </script>
 </body>
 

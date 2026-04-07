@@ -156,6 +156,80 @@
 
     <script>
         lucide.createIcons();
+
+        const claimDonation = async (id) => {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                alert('Please login as an NGO first');
+                window.location.href = '../login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/donations/${id}/claim?ngoId=${currentUser.id}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    alert('Donation claimed successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Failed to claim donation');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Backend Error');
+            }
+        };
+
+        const loadDonations = async () => {
+            const grid = document.querySelector('div[style*="grid-template-columns"]');
+            grid.innerHTML = '<p>Loading donations...</p>';
+
+            try {
+                const response = await fetch('http://localhost:8080/api/donations/available');
+                const donations = await response.json();
+
+                if (donations.length === 0) {
+                    grid.innerHTML = '<p>No available donations at the moment.</p>';
+                    return;
+                }
+
+                grid.innerHTML = donations.map(d => `
+                    <div class="card" style="padding: 0; overflow: hidden; position: relative;">
+                        <span class="badge badge-available" style="position: absolute; top: 1rem; right: 1rem;">Available</span>
+                        <div style="height: 200px; background: #f1f5f9; display: flex; align-items: center; justify-content: center;">
+                            <i data-lucide="${d.category === 'FOOD' ? 'apple' : d.category === 'CLOTHES' ? 'shirt' : 'package'}" style="width: 48px; height: 48px; color: var(--text-muted);"></i>
+                        </div>
+                        <div style="padding: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                <h3 style="font-size: 1.125rem;">${d.title}</h3>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Just now</span>
+                            </div>
+                            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i data-lucide="map-pin" size="14"></i> ${d.pickupAddress}
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Quantity</span>
+                                    <span style="font-weight: 700;">${d.quantity}</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; text-align: right;">
+                                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Condition</span>
+                                    <span style="font-weight: 700; color: var(--primary-green);">${d.itemCondition}</span>
+                                </div>
+                            </div>
+                            <button onclick="claimDonation(${d.id})" class="btn btn-secondary" style="width: 100%; justify-content: center; background-color: var(--primary-green);">Claim Donation</button>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (error) {
+                grid.innerHTML = '<p style="color: red;">Failed to load donations. Is the backend running?</p>';
+            }
+        };
+
+        loadDonations();
     </script>
 </body>
 

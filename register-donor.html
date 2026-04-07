@@ -68,6 +68,43 @@
 
     <script>
         lucide.createIcons();
+
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                name: e.target.querySelector('input[placeholder="John Doe"]').value,
+                email: e.target.querySelector('input[type="email"]').value,
+                mobile: e.target.querySelector('input[type="tel"]').value,
+                password: e.target.querySelector('input[placeholder="••••••••"]').value,
+                role: 'DONOR'
+            };
+
+            const confirmPassword = e.target.querySelectorAll('input[type="password"]')[1].value;
+            if (data.password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Registration successful! Please login.');
+                    window.location.href = 'login.html';
+                } else {
+                    const err = await response.text();
+                    alert('Registration failed: ' + err);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Backend not running? Please check console.');
+            }
+        });
     </script>
 </body>
 

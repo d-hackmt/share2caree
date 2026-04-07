@@ -146,6 +146,46 @@
 
     <script>
         lucide.createIcons();
+
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                alert('Session expired. Please login again.');
+                window.location.href = '../login.html';
+                return;
+            }
+
+            const data = {
+                title: e.target.querySelector('input[placeholder*="Winter Jackets"]').value,
+                category: e.target.querySelector('select').value.toUpperCase(),
+                quantity: e.target.querySelector('input[placeholder*="5 units"]').value,
+                itemCondition: e.target.querySelectorAll('select')[1].value,
+                description: e.target.querySelector('textarea').value,
+                pickupAddress: e.target.querySelector('input[placeholder*="Complete address"]').value,
+                donorId: currentUser.id,
+                status: 'AVAILABLE'
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/api/donations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Donation posted successfully!');
+                    window.location.href = 'my-donations.html';
+                } else {
+                    alert('Failed to post donation');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Backend not running? Please check console.');
+            }
+        });
     </script>
 </body>
 
