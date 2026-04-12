@@ -12,6 +12,14 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/location-picker.js"></script>
+    <!-- Replace YOUR_API_KEY with your actual Google Maps API Key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            initLocationPicker('map', 'locationSearch', 'lat', 'lng');
+        }
+    </script>
 </head>
 
 <body
@@ -57,11 +65,28 @@
 
             <div class="form-group">
                 <label class="form-label">Create Password</label>
-                <input type="password" class="form-control" placeholder="••••••••" required>
+                <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="location-section">
+                <label class="form-label">Office Location</label>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Select the location where donations will be picked up or delivered.
+                </p>
+                <div class="search-container">
+                    <i data-lucide="map-pin" class="search-icon"></i>
+                    <input type="text" id="locationSearch" class="form-control" placeholder="Search NGO address...">
+                    <button type="button" class="btn btn-location" onclick="getCurrentLocation('lat', 'lng')">
+                        <i data-lucide="locate"></i>
+                    </button>
+                </div>
+                <div id="map" class="map-container"></div>
+                <input type="hidden" id="lat" required>
+                <input type="hidden" id="lng" required>
             </div>
 
             <button type="submit" class="btn btn-secondary"
-                style="width: 100%; justify-content: center; margin-top: 1rem; background-color: var(--primary-green);">
+                style="width: 100%; justify-content: center; margin-top: 1.5rem; background-color: var(--primary-green);">
                 Submit for Verification
             </button>
         </form>
@@ -77,6 +102,44 @@
 
     <script>
         lucide.createIcons();
+
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                name: e.target.querySelector('input[placeholder="Giving Hands Foundation"]').value,
+                registrationId: e.target.querySelector('input[placeholder="NGO-XXXX-XXXX"]').value,
+                email: e.target.querySelector('input[type="email"]').value,
+                password: document.getElementById('password').value,
+                latitude: parseFloat(document.getElementById('lat').value),
+                longitude: parseFloat(document.getElementById('lng').value),
+                role: 'NGO'
+            };
+
+            if (!data.latitude || !data.longitude) {
+                alert("Please select your office location on the map.");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/user/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Registration submitted! You can login once verified.');
+                    window.location.href = 'login.html';
+                } else {
+                    const err = await response.text();
+                    alert('Registration failed: ' + err);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Backend not running? Please check console.');
+            }
+        });
     </script>
 </body>
 

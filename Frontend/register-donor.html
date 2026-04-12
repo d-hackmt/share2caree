@@ -12,6 +12,14 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/location-picker.js"></script>
+    <!-- Replace YOUR_API_KEY with your actual Google Maps API Key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            initLocationPicker('map', 'locationSearch', 'lat', 'lng');
+        }
+    </script>
 </head>
 
 <body
@@ -24,7 +32,7 @@
             <p style="color: var(--text-muted); margin-top: 0.5rem;">Start sharing your kindness with the world.</p>
         </div>
 
-        <form action="#" onsubmit="event.preventDefault(); window.location.href='login.html';">
+        <form>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
                     <label class="form-label">Full Name</label>
@@ -46,9 +54,23 @@
                 <input type="password" class="form-control" placeholder="••••••••" required>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" placeholder="••••••••" required>
+            <div class="form-control" style="display: none;"></div> <!-- Spacer -->
+
+            <div class="location-section">
+                <label class="form-label">Your Location</label>
+                <div class="search-container">
+                    <i data-lucide="map-pin" class="search-icon"></i>
+                    <input type="text" id="locationSearch" class="form-control" placeholder="Search your address...">
+                    <button type="button" class="btn btn-location" onclick="getCurrentLocation('lat', 'lng')" title="Use my current location">
+                        <i data-lucide="locate"></i>
+                    </button>
+                </div>
+                <div id="map" class="map-container"></div>
+                <input type="hidden" id="lat" required>
+                <input type="hidden" id="lng" required>
+                <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">
+                    Drag the pin or click on the map to refine your location.
+                </small>
             </div>
 
             <button type="submit" class="btn btn-primary"
@@ -75,10 +97,17 @@
             const data = {
                 name: e.target.querySelector('input[placeholder="John Doe"]').value,
                 email: e.target.querySelector('input[type="email"]').value,
-                mobile: e.target.querySelector('input[type="tel"]').value,
+                phone: e.target.querySelector('input[type="tel"]').value,
                 password: e.target.querySelector('input[placeholder="••••••••"]').value,
+                latitude: parseFloat(document.getElementById('lat').value),
+                longitude: parseFloat(document.getElementById('lng').value),
                 role: 'DONOR'
             };
+
+            if (!data.latitude || !data.longitude) {
+                alert("Please select a location on the map.");
+                return;
+            }
 
             const confirmPassword = e.target.querySelectorAll('input[type="password"]')[1].value;
             if (data.password !== confirmPassword) {
@@ -87,7 +116,7 @@
             }
 
             try {
-                const response = await fetch('http://localhost:8080/api/auth/register', {
+                const response = await fetch('http://localhost:8080/user/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
