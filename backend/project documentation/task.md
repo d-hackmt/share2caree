@@ -1,0 +1,6 @@
+- [x] Research existing models (User, Role, NGOStatus)
+- [x] Design ERD and Table Schema
+- [x] Create UML Class Diagram
+- [x] Create UML Use Case Diagram
+- [x] Create UML Sequence Diagram (Donation flow)
+- [ ] Implement database migrations or entities (Future step)
