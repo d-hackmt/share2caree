@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Donations | Admin | ShareToCare</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 1rem; background: var(--bg-main); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; white-space: nowrap; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.875rem; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .filter-bar select, .filter-bar input { padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.875rem; background: var(--bg-card); color: var(--text-primary); }
+    </style>
+</head>
+
+<body style="background-color: var(--bg-main);">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="../index.html" class="logo" style="margin-bottom: 2.5rem; padding: 0 1rem;">ShareTo<span>Care</span></a>
+            <nav style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1;">
+                <a href="verify-ngos.html" class="btn" style="justify-content: flex-start; color: var(--text-muted);">
+                    <i data-lucide="shield-check"></i> Verify NGOs
+                </a>
+                <a href="donations.html" class="btn" style="background: var(--primary-blue-light); color: var(--primary-blue); justify-content: flex-start;">
+                    <i data-lucide="package"></i> All Donations
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <a href="../login.html" onclick="localStorage.clear()" class="btn" style="justify-content: flex-start; color: #ef4444; width: 100%;">
+                    <i data-lucide="log-out"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header style="margin-bottom: 1.5rem;">
+                <h1 style="font-size: 1.875rem;">All Donations</h1>
+                <p style="color: var(--text-muted);">Complete overview of every donation on the platform.</p>
+            </header>
+
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="Search by title or address..." style="flex: 1; min-width: 200px;" oninput="renderTable()">
+                <select id="statusFilter" onchange="renderTable()">
+                    <option value="">All Statuses</option>
+                    <option value="AVAILABLE">Available</option>
+                    <option value="CLAIMED">Claimed</option>
+                </select>
+                <select id="categoryFilter" onchange="renderTable()">
+                    <option value="">All Categories</option>
+                    <option value="FOOD">Food</option>
+                    <option value="CLOTHES">Clothes</option>
+                    <option value="BOOKS">Books</option>
+                    <option value="GAMES">Games</option>
+                    <option value="OTHER">Other</option>
+                </select>
+                <span id="countLabel" style="color: var(--text-muted); font-size: 0.875rem; white-space: nowrap;"></span>
+            </div>
+
+            <div class="card" style="padding: 0; overflow: hidden; overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Condition</th>
+                            <th>Pickup Address</th>
+                            <th>Donor ID</th>
+                            <th>NGO ID</th>
+                            <th>Status</th>
+                            <th>Posted On</th>
+                        </tr>
+                    </thead>
+                    <tbody id="donationTableBody">
+                        <tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2rem;">Loading donations...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser || currentUser.role !== 'ADMIN') {
+            window.location.href = '../login.html';
+        }
+
+        let allDonations = [];
+
+        const formatDate = (isoStr) => {
+            if (!isoStr) return '-';
+            const d = new Date(isoStr);
+            return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        };
+
+        const renderTable = () => {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+
+            const filtered = allDonations.filter(d => {
+                const matchSearch = !search ||
+                    (d.title && d.title.toLowerCase().includes(search)) ||
+                    (d.pickupAddress && d.pickupAddress.toLowerCase().includes(search));
+                const matchStatus = !status || d.status === status;
+                const matchCategory = !category || d.category === category;
+                return matchSearch && matchStatus && matchCategory;
+            });
+
+            document.getElementById('countLabel').textContent = `${filtered.length} of ${allDonations.length} donations`;
+
+            const tbody = document.getElementById('donationTableBody');
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding: 2rem;">No donations match your filters.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(d => {
+                const isAvailable = d.status === 'AVAILABLE';
+                const badgeStyle = isAvailable
+                    ? 'badge badge-available'
+                    : 'badge badge-pending';
+                return `
+                <tr>
+                    <td style="font-weight: 600; max-width: 200px;">${d.title || '-'}</td>
+                    <td>${d.category || '-'}</td>
+                    <td>${d.quantity || '-'}</td>
+                    <td>${d.itemCondition || '-'}</td>
+                    <td style="max-width: 200px; word-break: break-word;">${d.pickupAddress || '-'}</td>
+                    <td style="color: var(--text-muted);">${d.donorId || '-'}</td>
+                    <td style="color: var(--text-muted);">${d.ngoId || '-'}</td>
+                    <td><span class="${badgeStyle}">${d.status}</span></td>
+                    <td style="white-space: nowrap;">${formatDate(d.createdAt)}</td>
+                </tr>
+                `;
+            }).join('');
+        };
+
+        const loadDonations = async () => {
+            try {
+                const res = await fetch('http://localhost:8080/api/donations');
+                allDonations = await res.json();
+                renderTable();
+            } catch (err) {
+                document.getElementById('donationTableBody').innerHTML =
+                    '<tr><td colspan="9" style="text-align:center; color: red; padding: 2rem;">Failed to load donations. Is the backend running?</td></tr>';
+            }
+        };
+
+        loadDonations();
+    </script>
+</body>
+</html>

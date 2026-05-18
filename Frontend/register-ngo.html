@@ -8,91 +8,161 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="js/location-picker.js"></script>
-    <!-- Replace YOUR_API_KEY with your actual Google Maps API Key -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsTfrOsoC1YbIa_AILr9T1XTaEcIUpn0k&libraries=places&callback=initMap" async defer onerror="onMapsError()"></script>
     <script>
         function initMap() {
-            initLocationPicker('map', 'locationSearch', 'lat', 'lng');
+            try {
+                initLocationPicker('map', 'locationSearch', 'lat', 'lng');
+                document.getElementById('mapNote').style.display = 'none';
+            } catch (e) {
+                onMapsError();
+            }
+        }
+        function onMapsError() {
+            const mapEl = document.getElementById('map');
+            if (mapEl) mapEl.style.display = 'none';
+            const note = document.getElementById('mapNote');
+            if (note) note.style.display = 'block';
         }
     </script>
+    <style>
+        .input-wrapper { position: relative; }
+        .toggle-eye {
+            position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; color: var(--text-muted);
+            display: flex; align-items: center; padding: 0;
+        }
+        .field-error { color: #dc2626; font-size: 0.78rem; margin-top: 0.25rem; display: none; }
+        .form-control.invalid { border-color: #dc2626; }
+        .file-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            position: relative;
+        }
+        .file-upload-area:hover { border-color: var(--primary-green); }
+        .file-upload-area input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .file-name {
+            margin-top: 0.5rem; font-size: 0.8rem; color: var(--primary-green);
+            display: none; font-weight: 500;
+        }
+    </style>
 </head>
 
-<body
-    style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: var(--bg-main); padding: 2rem 0;">
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: var(--bg-main); padding: 2rem 0;">
     <div class="card animate-fade-in" style="width: 100%; max-width: 650px; padding: 2.5rem;">
         <div style="text-align: center; margin-bottom: 2rem;">
-            <a href="index.html" class="logo"
-                style="justify-content: center; font-size: 2rem;">ShareTo<span>Care</span></a>
+            <a href="index.html" class="logo" style="justify-content: center; font-size: 2rem;">ShareTo<span>Care</span></a>
             <h2 style="margin-top: 1rem; color: var(--primary-green);">NGO Registration</h2>
-            <p style="color: var(--text-muted); margin-top: 0.5rem;">Join as a verified NGO to claim and distribute
-                donations.</p>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">Join as a verified NGO to claim and distribute donations.</p>
         </div>
 
-        <form action="#" onsubmit="event.preventDefault(); window.location.href='login.html';">
-            <h3
-                style="font-size: 1.125rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-                Organization Details</h3>
+        <div id="formError" style="display:none; background:#fee2e2; color:#dc2626; padding:0.875rem 1rem; border-radius:var(--radius-md); margin-bottom:1.5rem; font-size:0.875rem;"></div>
+        <div id="formSuccess" style="display:none; background:#dcfce7; color:#166534; padding:0.875rem 1rem; border-radius:var(--radius-md); margin-bottom:1.5rem; font-size:0.875rem;"></div>
+
+        <form id="ngoRegisterForm" novalidate>
+            <h3 style="font-size: 1.125rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Organization Details</h3>
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">NGO Name</label>
-                    <input type="text" class="form-control" placeholder="Giving Hands Foundation" required>
+                    <label class="form-label">NGO Name *</label>
+                    <input id="ngoName" type="text" class="form-control" placeholder="Giving Hands Foundation" autocomplete="organization">
+                    <p class="field-error" id="err-ngoName">Please enter your NGO name.</p>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Registration ID</label>
-                    <input type="text" class="form-control" placeholder="NGO-XXXX-XXXX" required>
+                    <label class="form-label">Official Email *</label>
+                    <input id="ngoEmail" type="email" class="form-control" placeholder="contact@ngo.org" autocomplete="email">
+                    <p class="field-error" id="err-ngoEmail">Please enter a valid email address.</p>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Official Email</label>
-                <input type="email" class="form-control" placeholder="contact@ngo.org" required>
+                <label class="form-label">Phone Number *</label>
+                <input id="ngoPhone" type="tel" class="form-control" placeholder="+91 98765 43210" autocomplete="tel">
+                <p class="field-error" id="err-ngoPhone">Please enter a valid phone number (10–13 digits).</p>
             </div>
 
-            <h3
-                style="font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-                Verification Documents</h3>
-            <div class="form-group">
-                <label class="form-label">Upload NGO License (PDF/Image)</label>
-                <input type="file" class="form-control">
-                <small style="color: var(--text-muted);">Please upload the registration certificate of your
-                    organization.</small>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <div class="input-wrapper">
+                        <input id="ngoPassword" type="password" class="form-control" placeholder="Min. 8 characters" autocomplete="new-password" style="padding-right: 2.5rem;">
+                        <button type="button" class="toggle-eye" onclick="togglePassword('ngoPassword', 'eye1')" tabindex="-1">
+                            <i id="eye1" data-lucide="eye"></i>
+                        </button>
+                    </div>
+                    <p class="field-error" id="err-ngoPassword">Password must be at least 8 characters.</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password *</label>
+                    <div class="input-wrapper">
+                        <input id="ngoConfirm" type="password" class="form-control" placeholder="Re-enter password" autocomplete="new-password" style="padding-right: 2.5rem;">
+                        <button type="button" class="toggle-eye" onclick="togglePassword('ngoConfirm', 'eye2')" tabindex="-1">
+                            <i id="eye2" data-lucide="eye"></i>
+                        </button>
+                    </div>
+                    <p class="field-error" id="err-ngoConfirm">Passwords do not match.</p>
+                </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Create Password</label>
-                <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+                <label class="form-label">NGO License / Registration Certificate *</label>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                    Upload your NGO's official registration certificate or license. Accepted: PDF, JPG, PNG (max 10 MB).
+                </p>
+                <div class="file-upload-area" id="uploadArea">
+                    <input type="file" id="licenseFile" accept=".pdf,.jpg,.jpeg,.png" onchange="onFileSelected(this)">
+                    <i data-lucide="upload-cloud" style="width:2rem; height:2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0;">Click to browse or drag & drop</p>
+                    <p style="color: var(--text-muted); font-size: 0.75rem; margin: 0.25rem 0 0;">PDF, JPG, PNG up to 10 MB</p>
+                </div>
+                <p class="file-name" id="fileName"></p>
+                <p class="field-error" id="err-licenseFile">Please upload your NGO license or certificate.</p>
             </div>
 
             <div class="location-section">
-                <label class="form-label">Office Location</label>
-                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
-                    Select the location where donations will be picked up or delivered.
+                <label class="form-label">Office Location <span style="color: var(--text-muted); font-weight: 400;">(optional)</span></label>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                    Helps donors find NGOs near them. You can skip if map is unavailable.
                 </p>
+                <button type="button" id="gpsBtn" onclick="useGpsLocation()"
+                    style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.5rem 1rem; margin-bottom:0.75rem;
+                           border:1.5px solid var(--border-color); border-radius:var(--radius-md);
+                           background:var(--bg-card); color:var(--text-primary);
+                           font-size:0.8rem; font-weight:600; cursor:pointer;">
+                    <i data-lucide="locate" style="width:14px;height:14px;"></i>
+                    Use current location
+                </button>
+                <p id="gpsStatus" style="display:none; font-size:0.8rem; margin-bottom:0.5rem;"></p>
                 <div class="search-container">
                     <i data-lucide="map-pin" class="search-icon"></i>
                     <input type="text" id="locationSearch" class="form-control" placeholder="Search NGO address...">
-                    <button type="button" class="btn btn-location" onclick="getCurrentLocation('lat', 'lng')">
+                    <button type="button" class="btn btn-location" onclick="getCurrentLocation('lat', 'lng')" title="Use my current location">
                         <i data-lucide="locate"></i>
                     </button>
                 </div>
                 <div id="map" class="map-container"></div>
-                <input type="hidden" id="lat" required>
-                <input type="hidden" id="lng" required>
+                <div id="mapNote" style="display:none; padding: 0.875rem; background: #fef9c3; border-radius: var(--radius-md); font-size: 0.85rem; color: #713f12; margin-top: 0.5rem;">
+                    Map unavailable (no API key configured). Location will be left blank — you can update it later.
+                </div>
+                <input type="hidden" id="lat">
+                <input type="hidden" id="lng">
             </div>
 
-            <button type="submit" class="btn btn-secondary"
-                style="width: 100%; justify-content: center; margin-top: 1.5rem; background-color: var(--primary-green);">
+            <button id="submitBtn" type="submit" class="btn btn-secondary" style="width: 100%; justify-content: center; margin-top: 1.5rem; background-color: var(--primary-green);">
                 Submit for Verification
             </button>
         </form>
 
-        <div
-            style="margin-top: 2rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+        <div style="margin-top: 2rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
             <p style="color: var(--text-muted); font-size: 0.875rem;">
                 Already have an account?
                 <a href="login.html" style="color: var(--primary-blue); font-weight: 600;">Login here</a>
@@ -103,23 +173,178 @@
     <script>
         lucide.createIcons();
 
-        document.querySelector('form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const data = {
-                name: e.target.querySelector('input[placeholder="Giving Hands Foundation"]').value,
-                registrationId: e.target.querySelector('input[placeholder="NGO-XXXX-XXXX"]').value,
-                email: e.target.querySelector('input[type="email"]').value,
-                password: document.getElementById('password').value,
-                latitude: parseFloat(document.getElementById('lat').value),
-                longitude: parseFloat(document.getElementById('lng').value),
-                role: 'NGO'
-            };
-
-            if (!data.latitude || !data.longitude) {
-                alert("Please select your office location on the map.");
+        function useGpsLocation() {
+            const btn = document.getElementById('gpsBtn');
+            const status = document.getElementById('gpsStatus');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader" style="width:14px;height:14px;"></i> Getting location...';
+            lucide.createIcons();
+            if (!navigator.geolocation) {
+                status.textContent = 'Your browser does not support GPS location.';
+                status.style.color = '#dc2626';
+                status.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="locate" style="width:14px;height:14px;"></i> Use current location';
+                lucide.createIcons();
                 return;
             }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    document.getElementById('lat').value = lat;
+                    document.getElementById('lng').value = lng;
+                    status.textContent = 'Current location set successfully.';
+                    status.style.color = 'var(--primary-green)';
+                    status.style.display = 'block';
+                    btn.style.borderColor = 'var(--primary-green)';
+                    btn.style.color = 'var(--primary-green)';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="locate" style="width:14px;height:14px;"></i> Use current location';
+                    lucide.createIcons();
+                    if (typeof map !== 'undefined' && map) {
+                        const mapPos = { lat, lng };
+                        map.setCenter(mapPos);
+                        map.setZoom(15);
+                        marker.setPosition(mapPos);
+                    }
+                },
+                () => {
+                    status.textContent = 'Could not get location. Please allow access or pick on the map.';
+                    status.style.color = '#dc2626';
+                    status.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="locate" style="width:14px;height:14px;"></i> Use current location';
+                    lucide.createIcons();
+                }
+            );
+        }
+
+        function onFileSelected(input) {
+            const file = input.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileName').style.display = 'block';
+                showFieldError('licenseFile', false);
+            }
+        }
+
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            icon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        }
+
+        function validatePhone(raw) {
+            const digits = raw.replace(/\D/g, '');
+            return digits.length >= 10 && digits.length <= 13;
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+        }
+
+        function showFieldError(id, show) {
+            const errEl = document.getElementById('err-' + id);
+            const inputEl = document.getElementById(id);
+            if (errEl) errEl.style.display = show ? 'block' : 'none';
+            if (inputEl) inputEl.classList.toggle('invalid', show);
+        }
+
+        function showFormError(msg, isHtml = false) {
+            const el = document.getElementById('formError');
+            if (isHtml) el.innerHTML = msg; else el.textContent = msg;
+            el.style.display = 'block';
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        document.getElementById('ngoName').addEventListener('blur', function() {
+            showFieldError('ngoName', !this.value.trim());
+        });
+        document.getElementById('ngoEmail').addEventListener('blur', function() {
+            showFieldError('ngoEmail', !validateEmail(this.value));
+        });
+        document.getElementById('ngoPhone').addEventListener('blur', function() {
+            showFieldError('ngoPhone', !validatePhone(this.value));
+        });
+        document.getElementById('ngoPassword').addEventListener('blur', function() {
+            showFieldError('ngoPassword', this.value.length < 8);
+        });
+        document.getElementById('ngoConfirm').addEventListener('blur', function() {
+            showFieldError('ngoConfirm', this.value !== document.getElementById('ngoPassword').value);
+        });
+
+        document.getElementById('ngoRegisterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('formError').style.display = 'none';
+
+            const name = document.getElementById('ngoName').value.trim();
+            const email = document.getElementById('ngoEmail').value.trim();
+            const phone = document.getElementById('ngoPhone').value.trim();
+            const password = document.getElementById('ngoPassword').value;
+            const confirm = document.getElementById('ngoConfirm').value;
+            const licenseInput = document.getElementById('licenseFile');
+
+            let hasError = false;
+            if (!name) { showFieldError('ngoName', true); hasError = true; }
+            if (!validateEmail(email)) { showFieldError('ngoEmail', true); hasError = true; }
+            if (!validatePhone(phone)) { showFieldError('ngoPhone', true); hasError = true; }
+            if (password.length < 8) { showFieldError('ngoPassword', true); hasError = true; }
+            if (password !== confirm) { showFieldError('ngoConfirm', true); hasError = true; }
+            if (!licenseInput.files.length) { showFieldError('licenseFile', true); hasError = true; }
+
+            if (hasError) {
+                showFormError('Please fix the highlighted fields before submitting.');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading license...';
+
+            // Step 1: upload license file
+            let licenseFilename = null;
+            try {
+                const formData = new FormData();
+                formData.append('file', licenseInput.files[0]);
+                const uploadRes = await fetch('http://localhost:8080/user/uploadLicense', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!uploadRes.ok) {
+                    showFormError('Failed to upload license file. Please try again.');
+                    btn.disabled = false;
+                    btn.textContent = 'Submit for Verification';
+                    return;
+                }
+                const uploadData = await uploadRes.json();
+                licenseFilename = uploadData.filename;
+            } catch (err) {
+                showFormError('Could not reach the server. Make sure the backend is running on port 8080.');
+                btn.disabled = false;
+                btn.textContent = 'Submit for Verification';
+                return;
+            }
+
+            btn.textContent = 'Submitting...';
+
+            // Step 2: register NGO with license filename
+            const lat = parseFloat(document.getElementById('lat').value);
+            const lng = parseFloat(document.getElementById('lng').value);
+
+            const data = {
+                name,
+                email,
+                phone,
+                password,
+                latitude: isNaN(lat) ? null : lat,
+                longitude: isNaN(lng) ? null : lng,
+                role: 'NGO',
+                licenseFile: licenseFilename
+            };
 
             try {
                 const response = await fetch('http://localhost:8080/user/register', {
@@ -128,19 +353,33 @@
                     body: JSON.stringify(data)
                 });
 
+                let result = {};
+                try {
+                    result = await response.json();
+                } catch (_) {
+                    result = { message: `Server error (HTTP ${response.status}). Check backend logs.` };
+                }
+
                 if (response.ok) {
-                    alert('Registration submitted! You can login once verified.');
-                    window.location.href = 'login.html';
+                    document.getElementById('formSuccess').textContent = 'Registration submitted! Your account will be activated once an admin approves it. Redirecting to login...';
+                    document.getElementById('formSuccess').style.display = 'block';
+                    setTimeout(() => window.location.href = 'login.html', 2500);
                 } else {
-                    const err = await response.text();
-                    alert('Registration failed: ' + err);
+                    const msg = result.message || 'Registration failed. Please try again.';
+                    if (msg.toLowerCase().includes('already registered')) {
+                        showFormError(msg + ' <a href="login.html" style="color:#b91c1c;font-weight:600;text-decoration:underline;">Login instead?</a>', true);
+                    } else {
+                        showFormError(msg);
+                    }
+                    btn.disabled = false;
+                    btn.textContent = 'Submit for Verification';
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('Backend not running? Please check console.');
+                showFormError('Could not reach the server. Make sure the backend is running on port 8080.');
+                btn.disabled = false;
+                btn.textContent = 'Submit for Verification';
             }
         });
     </script>
 </body>
-
 </html>

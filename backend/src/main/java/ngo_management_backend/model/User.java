@@ -29,4 +29,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private NGOStatus ngoStatus = NGOStatus.PENDING;
+
+    private String licenseFile;
 }
